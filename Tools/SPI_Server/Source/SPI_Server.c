@@ -31,7 +31,7 @@
 
 #include "SPI_Server_Config.h"
 #include "SPI_Server.h"
-
+#include "LCDprint.h"
 #include "cmsis_os2.h"
 #include "cmsis_compiler.h"
 #include "cmsis_vio.h"
@@ -158,8 +158,8 @@ static       void              *ptr_spi_xfer_buf_tx_alloc = NULL;
 int32_t SPI_Server_Start (void) {
   int32_t ret;
 
-  vioInit();
-  (void)vioPrint(vioLevelHeading, "SPI Server v%s", SPI_SERVER_VER);
+  LCDInit();
+  (void)LCDPrint(LCDLevelHeading, "SPI Server v%s", SPI_SERVER_VER);
 
   // Initialize local variables
   spi_server_state   = SPI_SERVER_STATE_RECEPTION;
@@ -221,7 +221,7 @@ int32_t SPI_Server_Start (void) {
   }
 
   if (ret != EXIT_SUCCESS) {
-    vioPrint(vioLevelError, "Server Start failed!");
+    LCDPrint(LCDLevelError, "Server Start failed!");
   }
 
   return ret;
@@ -272,7 +272,7 @@ int32_t SPI_Server_Stop (void) {
   }
 
   if (ret != EXIT_SUCCESS) {
-    vioPrint(vioLevelError, "Server Stop failed! ");
+    LCDPrint(LCDLevelError, "Server Stop failed! ");
   }
 
   return ret;
@@ -313,13 +313,13 @@ static void SPI_Server_Thread (void *argument) {
             break;
           }
         }
-        vioPrint(vioLevelMessage, "%.20s                    ", spi_cmd_buf_rx);
+        LCDPrint(LCDLevelMessage, "%.20s                    ", spi_cmd_buf_rx);
         spi_server_state = SPI_SERVER_STATE_RECEPTION;
         break;
 
       case SPI_SERVER_STATE_TERMINATE:  // Self-terminate the thread
       default:                          // Should never happen, processed as terminate request
-        vioPrint(vioLevelError, "Server stopped!     ");
+        LCDPrint(LCDLevelError, "Server stopped!     ");
         (void)SPI_Com_Abort();
         (void)osThreadTerminate(osThreadGetId());
         break;
